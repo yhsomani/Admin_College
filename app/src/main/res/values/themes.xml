@@ -1,18 +1,25 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.AdminCollege" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <!-- Brand Colors -->
+        <item name="colorPrimary">@color/brand_cyan</item>
+        <item name="colorPrimaryVariant">@color/brand_cyan_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/colorAccent</item>
-        <item name="colorSecondaryVariant">@color/colorAccent</item>
+        <item name="colorSecondary">@color/brand_accent</item>
+        <item name="colorSecondaryVariant">@color/brand_accent</item>
         <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
+
+        <!-- Status bar -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="android:windowBackground">@color/backgroundColor</item>
-        <item name="android:textColor">@color/textColor</item>
+
+        <!-- DYNAMIC UI COLORS (LIGHT MAPPING) -->
+        <!-- Map 'android:colorBackground' to our light gray -->
+        <item name="android:colorBackground">@color/light_bg_gray</item>
+        <!-- Map 'colorSurface' (Cards) to white -->
+        <item name="colorSurface">@color/white</item>
+        <!-- Map 'colorOnBackground' (Text) to dark gray -->
+        <item name="colorOnBackground">@color/light_text_gray</item>
+        <!-- Map 'colorOnSurface' (Text on cards) to dark gray -->
+        <item name="colorOnSurface">@color/light_text_gray</item>
     </style>
 </resources>

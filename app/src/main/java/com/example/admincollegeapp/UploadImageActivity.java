@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.admincollegeapp.utils.ImageUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -49,7 +50,7 @@ public class UploadImageActivity extends AppCompatActivity {
     String category;
     private ProgressDialog progressDialog;
 
-    // New ActivityResultLauncher
+    // New ActivityResultLauncher using Helper
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -58,10 +59,12 @@ public class UploadImageActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri uri = result.getData().getData();
                         try {
-                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            // FIXED: Using ImageUtils to handle API 29+ deprecation
+                            bitmap = ImageUtils.getBitmap(UploadImageActivity.this, uri);
                             galleryImageView.setImageBitmap(bitmap);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            Toast.makeText(UploadImageActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -97,23 +100,15 @@ public class UploadImageActivity extends AppCompatActivity {
             }
         });
 
-        selectImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
+        selectImage.setOnClickListener(v -> openGallery());
 
-        uploadImageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (bitmap == null) {
-                    Toast.makeText(UploadImageActivity.this, "Select Image", Toast.LENGTH_SHORT).show();
-                } else if (category.equals("Select Category")) {
-                    Toast.makeText(UploadImageActivity.this, "Select Image Category", Toast.LENGTH_SHORT).show();
-                } else {
-                    uploadImage();
-                }
+        uploadImageBtn.setOnClickListener(v -> {
+            if (bitmap == null) {
+                Toast.makeText(UploadImageActivity.this, "Select Image", Toast.LENGTH_SHORT).show();
+            } else if (category.equals("Select Category")) {
+                Toast.makeText(UploadImageActivity.this, "Select Image Category", Toast.LENGTH_SHORT).show();
+            } else {
+                uploadImage();
             }
         });
     }
@@ -122,25 +117,22 @@ public class UploadImageActivity extends AppCompatActivity {
         progressDialog.setMessage("Uploading...");
         progressDialog.show();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // 50% compression to save bandwidth
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] data = baos.toByteArray();
+
         final StorageReference filePath = storageReference.child(System.currentTimeMillis() + ".jpg");
         UploadTask uploadTask = filePath.putBytes(data);
-        uploadTask.addOnCompleteListener(this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if (task.isSuccessful()) {
-                    filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            downloadUrl = uri.toString();
-                            uploadData();
-                        }
-                    });
-                } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(UploadImageActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-                }
+
+        uploadTask.addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                    downloadUrl = uri.toString();
+                    uploadData();
+                });
+            } else {
+                progressDialog.dismiss();
+                Toast.makeText(UploadImageActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -149,19 +141,13 @@ public class UploadImageActivity extends AppCompatActivity {
         DatabaseReference categoryReference = databaseReference.child(category);
         String uniqueKey = categoryReference.push().getKey();
         if (uniqueKey != null) {
-            categoryReference.child(uniqueKey).setValue(downloadUrl).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    progressDialog.dismiss();
-                    Toast.makeText(UploadImageActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                    clearComponents();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    Toast.makeText(UploadImageActivity.this, "Failed to Upload Image", Toast.LENGTH_SHORT).show();
-                }
+            categoryReference.child(uniqueKey).setValue(downloadUrl).addOnSuccessListener(unused -> {
+                progressDialog.dismiss();
+                Toast.makeText(UploadImageActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                clearComponents();
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(UploadImageActivity.this, "Failed to Upload Image", Toast.LENGTH_SHORT).show();
             });
         }
     }
@@ -173,6 +159,7 @@ public class UploadImageActivity extends AppCompatActivity {
     }
 
     private void openGallery() {
+        // ACTION_PICK is generally safer for gallery selection
         Intent pickImage = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(pickImage);
     }

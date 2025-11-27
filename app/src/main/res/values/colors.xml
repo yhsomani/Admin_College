@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand Colors (Adjusted for dark mode legibility) -->
-    <color name="colorPrimary">#4FC3F7</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#4FC3F7</color>
+    <!-- GLOBAL BRAND COLORS -->
+    <color name="brand_cyan">#4FC3F7</color>
+    <color name="brand_cyan_dark">#0288D1</color>
+    <color name="brand_accent">#03A9F4</color>
 
-    <!-- UI Semantic Colors (Dark Mode Versions) -->
-    <!-- Dark Grey background instead of Light Cyan -->
-    <color name="backgroundColor">#121212</color>
-    <!-- Slightly lighter grey for cards to create elevation -->
-    <color name="surfaceColor">#1E1E1E</color>
-    <!-- White text for dark backgrounds -->
-    <color name="textColor">#E0E0E0</color>
-    <color name="iconTint">#FFFFFF</color>
+    <!-- NEUTRALS -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
 
-    <!-- App Specific Colors (Slightly desaturated for dark mode comfort) -->
+    <!-- Light Mode Specific Shades -->
+    <color name="light_bg_gray">#F5F5F5</color>
+    <color name="light_text_gray">#212121</color>
+
+    <!-- Dark Mode Specific Shades -->
+    <color name="dark_bg_gray">#121212</color>
+    <color name="dark_surface_gray">#1E1E1E</color>
+    <color name="dark_text_gray">#E0E0E0</color>
+
+    <!-- App Category Colors (Used for Icons) -->
     <color name="purple1">#9C67E8</color>
     <color name="yellow1">#FFE082</color>
     <color name="green1">#69F0AE</color>
     <color name="blue1">#82B1FF</color>
     <color name="red1">#EF9A9A</color>
-    <color name="lightgray">#424242</color>
 
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <!-- Divider/Line color -->
+    <color name="lightgray">#E0E0E0</color>
 </resources>

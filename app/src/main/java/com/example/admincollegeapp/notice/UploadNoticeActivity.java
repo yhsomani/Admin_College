@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.admincollegeapp.R;
+import com.example.admincollegeapp.utils.ImageUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
 public class UploadNoticeActivity extends AppCompatActivity {
 
     private Bitmap bitmap;
@@ -48,7 +50,6 @@ public class UploadNoticeActivity extends AppCompatActivity {
     private MaterialCardView addImageCardView;
     private ProgressDialog progressDialog;
 
-    // New ActivityResultLauncher
     private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -57,10 +58,12 @@ public class UploadNoticeActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri uri = result.getData().getData();
                         try {
-                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            // FIXED: Using ImageUtils
+                            bitmap = ImageUtils.getBitmap(UploadNoticeActivity.this, uri);
                             noticeImageView.setImageBitmap(bitmap);
                         } catch (IOException e) {
                             e.printStackTrace();
+                            Toast.makeText(UploadNoticeActivity.this, "Failed to load image", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -83,26 +86,18 @@ public class UploadNoticeActivity extends AppCompatActivity {
         noticeTitle = findViewById(R.id.noticeTitleTextView);
         uploadNoticeBTN = findViewById(R.id.uploadNoticeButton);
 
-        uploadNoticeBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (noticeTitle.getText().toString().isEmpty()) {
-                    noticeTitle.setError("Required Field");
-                    noticeTitle.requestFocus();
-                } else if (bitmap == null) {
-                    uploadData(); // Upload without image
-                } else {
-                    uploadImage(); // Upload with image
-                }
+        uploadNoticeBTN.setOnClickListener(v -> {
+            if (noticeTitle.getText().toString().isEmpty()) {
+                noticeTitle.setError("Required Field");
+                noticeTitle.requestFocus();
+            } else if (bitmap == null) {
+                uploadData();
+            } else {
+                uploadImage();
             }
         });
 
-        addImageCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openGallery();
-            }
-        });
+        addImageCardView.setOnClickListener(v -> openGallery());
     }
 
     private void uploadImage() {
@@ -113,51 +108,36 @@ public class UploadNoticeActivity extends AppCompatActivity {
         byte[] data = baos.toByteArray();
         final StorageReference filePath = storageReference.child(System.currentTimeMillis() + ".jpg");
         UploadTask uploadTask = filePath.putBytes(data);
-        uploadTask.addOnCompleteListener(this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if (task.isSuccessful()) {
-                    filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            downloadUrl = uri.toString();
-                            uploadData();
-                        }
-                    });
-                } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(UploadNoticeActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-                }
+        uploadTask.addOnCompleteListener(this, task -> {
+            if (task.isSuccessful()) {
+                filePath.getDownloadUrl().addOnSuccessListener(uri -> {
+                    downloadUrl = uri.toString();
+                    uploadData();
+                });
+            } else {
+                progressDialog.dismiss();
+                Toast.makeText(UploadNoticeActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void uploadData() {
         String title = noticeTitle.getText().toString();
-
-        // Get Date
         String date = new SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().getTime());
-        // Get Time
         String time = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Calendar.getInstance().getTime());
 
         String uniqueKey = databaseReference.push().getKey();
         if (uniqueKey != null) {
             NoticeData noticeData = new NoticeData(title, downloadUrl, date, time, uniqueKey);
             databaseReference.child(uniqueKey).setValue(noticeData)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            progressDialog.dismiss();
-                            Toast.makeText(UploadNoticeActivity.this, "Notice Uploaded", Toast.LENGTH_SHORT).show();
-                            clearComponents();
-                        }
+                    .addOnSuccessListener(unused -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(UploadNoticeActivity.this, "Notice Uploaded", Toast.LENGTH_SHORT).show();
+                        clearComponents();
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(UploadNoticeActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
-                        }
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        Toast.makeText(UploadNoticeActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                     });
         }
     }
