@@ -41,23 +41,46 @@
 //}
 
 plugins {
+//    id 'com.android.application'
+//    // Add the Google services Gradle plugin
+//    id 'com.google.gms.google-services'
     id 'com.android.application'
-    // Add the Google services Gradle plugin
     id 'com.google.gms.google-services'
 }
 
 android {
+//    namespace 'com.example.admincollegeapp'
+//    compileSdk 34 // or your preferred SDK version
     namespace 'com.example.admincollegeapp'
-    compileSdk 34 // or your preferred SDK version
+    compileSdk 35 // CHANGED FROM 34 TO 35
+
+//    defaultConfig {
+//        applicationId "com.example.admincollegeapp"
+//        minSdk 24
+//        targetSdk 34
+//        versionCode 1
+//        versionName "1.0"
+//    }
 
     defaultConfig {
         applicationId "com.example.admincollegeapp"
         minSdk 24
-        targetSdk 34
+        targetSdk 35 // CHANGED FROM 34 TO 35
         versionCode 1
         versionName "1.0"
-    }
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     buildFeatures {
         viewBinding true
     }
@@ -69,8 +92,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:34.6.0')
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation platform('com.google.firebase:firebase-bom:32.7.2')
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-storage'
 
@@ -80,10 +102,10 @@ dependencies {
 
     // PDF Viewer (Note: This library requires a license key in production)
 //    implementation 'com.pspdfkit:pspdfkit:8.4.1'
-    implementation libs.activity
-    implementation libs.recyclerview
-    implementation libs.firebase.auth
-    implementation libs.credentials
-    implementation libs.credentials.play.services.auth
-    implementation libs.googleid
+//    implementation libs.activity
+//    implementation libs.recyclerview
+//    implementation libs.firebase.auth
+//    implementation libs.credentials
+//    implementation libs.credentials.play.services.auth
+//    implementation libs.googleid
 }

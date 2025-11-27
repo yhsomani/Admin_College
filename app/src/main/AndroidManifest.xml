@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.admincollegeapp">
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Removed 'package' attribute as it is defined in build.gradle -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"
-        tools:replace="android:maxSdkVersion" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion" />
 
     <application
         android:allowBackup="true"
@@ -20,34 +15,31 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AdminCollege">
-        <activity
-            android:name=".faculty.AddTeachersActivity"
-            android:exported="false" />
-        <activity
-            android:name=".notice.DeleteNoticeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".UploadImageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".faculty.FacultyActivity"
-            android:exported="false" />
-        <activity
-            android:name=".UploadPdfActivity"
-            android:exported="false" />
-        <activity
-            android:name=".notice.UploadNoticeActivity"
-            android:exported="false" />
+        android:theme="@style/Theme.AdminCollege"
+        tools:targetApi="31">
+
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Other Activities (Defined ONLY ONCE) -->
+        <activity android:name=".notice.UploadNoticeActivity" />
+        <activity android:name=".notice.DeleteNoticeActivity" />
+        <activity android:name=".UploadImageActivity" />
+        <activity android:name=".UploadPdfActivity" />
+        <activity android:name=".faculty.FacultyActivity" />
+        <activity android:name=".faculty.AddTeachersActivity" />
+
+        <!-- PDF Activity -->
+        <activity
+            android:name="com.pspdfkit.ui.PdfActivity"
+            android:windowSoftInputMode="adjustNothing" />
+
+    </application>
 </manifest>
