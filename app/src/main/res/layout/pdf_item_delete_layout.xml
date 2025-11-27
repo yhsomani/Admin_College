@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:elevation="10dp"
     app:cardCornerRadius="8dp"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="PDF Title"
-                android:textColor="@android:color/black"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="18sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -36,7 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Delete"
-                app:iconTint="@android:color/black"
+                android:textColor="?attr/colorOnSurface"
+                app:iconTint="?attr/colorOnSurface"
+                app:strokeColor="?attr/colorOnSurface"
                 app:iconGravity="textStart"
                 app:iconPadding="8dp"
                 app:cornerRadius="8dp"

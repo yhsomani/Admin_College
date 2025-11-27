@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:elevation="20dp"
-    app:cardBackgroundColor="@color/surfaceColor"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="15dp">
 
     <LinearLayout
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="2dp"
                     android:hint="Name"
-                    android:textColor="@color/textColor"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -50,7 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="2dp"
                     android:hint="Post"
-                    android:textColor="@color/textColor"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -59,10 +59,9 @@
                     android:layout_height="wrap_content"
                     android:hint="Email"
                     android:layout_margin="2dp"
-                    android:textColor="@color/textColor"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="18sp" />
 
-                <!-- Removed android:onClick attribute -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteData"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
@@ -70,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="Delete Data"
+                    android:textColor="?attr/colorOnSurface"
                     android:textAllCaps="false" />
 
             </LinearLayout>

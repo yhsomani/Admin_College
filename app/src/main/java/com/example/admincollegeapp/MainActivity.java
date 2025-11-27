@@ -14,45 +14,48 @@ import com.google.android.material.card.MaterialCardView;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     MaterialCardView uploadNotice, addGalleryImage, uploadEbooks, addFaculty, deleteNotice;
+    MaterialCardView deleteImage, deleteEbook; // New buttons
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         uploadNotice = findViewById(R.id.addNotice);
-        uploadNotice.setOnClickListener(this);
-
         addGalleryImage = findViewById(R.id.addGalleryImage);
-        addGalleryImage.setOnClickListener(this);
-
         uploadEbooks = findViewById(R.id.addEbook);
-        uploadEbooks.setOnClickListener(this);
-
         addFaculty = findViewById(R.id.addFaculty);
-        addFaculty.setOnClickListener(this);
-
         deleteNotice = findViewById(R.id.deleteNotice);
-        deleteNotice.setOnClickListener(this);
+        deleteImage = findViewById(R.id.deleteImage);
+        deleteEbook = findViewById(R.id.deleteEbook);
 
+        uploadNotice.setOnClickListener(this);
+        addGalleryImage.setOnClickListener(this);
+        uploadEbooks.setOnClickListener(this);
+        addFaculty.setOnClickListener(this);
+        deleteNotice.setOnClickListener(this);
+        deleteImage.setOnClickListener(this);
+        deleteEbook.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.addNotice) {
+        int id = view.getId();
+
+        if (id == R.id.addNotice) {
             startActivity(new Intent(MainActivity.this, UploadNoticeActivity.class));
-        }
-        if (view.getId() == R.id.addEbook) {
+        } else if (id == R.id.addEbook) {
             startActivity(new Intent(MainActivity.this, UploadPdfActivity.class));
-        }
-        if (view.getId() == R.id.addFaculty) {
+        } else if (id == R.id.addFaculty) {
             startActivity(new Intent(MainActivity.this, FacultyActivity.class));
-        }
-        if (view.getId() == R.id.addGalleryImage) {
+        } else if (id == R.id.addGalleryImage) {
             startActivity(new Intent(MainActivity.this, UploadImageActivity.class));
-        }
-        if (view.getId() == R.id.deleteNotice) {
+        } else if (id == R.id.deleteNotice) {
             startActivity(new Intent(MainActivity.this, DeleteNoticeActivity.class));
+        } else if (id == R.id.deleteImage) {
+            startActivity(new Intent(MainActivity.this, DeleteImageActivity.class));
+        } else if (id == R.id.deleteEbook) {
+            startActivity(new Intent(MainActivity.this, DeletePdfActivity.class));
         }
     }
-
 }

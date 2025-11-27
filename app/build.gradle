@@ -99,6 +99,7 @@ dependencies {
     // Image Loading & UI
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation libs.activity
 
     // PDF Viewer (Note: This library requires a license key in production)
 //    implementation 'com.pspdfkit:pspdfkit:8.4.1'

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor"
+    android:background="?android:attr/colorBackground"
     tools:context=".faculty.AddTeachersActivity">
 
     <LinearLayout
@@ -25,16 +25,15 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp">
+            android:layout_marginTop="15dp"
+            android:textColorHint="?android:attr/textColorHint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addTeacherName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 android:hint="Name"
-                android:textColorHint="@android:color/darker_gray"
-                android:textColor="@android:color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,16 +41,15 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp">
+            android:layout_marginTop="15dp"
+            android:textColorHint="?android:attr/textColorHint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addTeacherEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 android:hint="Email"
-                android:textColorHint="@android:color/darker_gray"
-                android:textColor="@android:color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,16 +57,15 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp">
+            android:layout_marginTop="15dp"
+            android:textColorHint="?android:attr/textColorHint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addTeacherPost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 android:hint="Post"
-                android:textColorHint="@android:color/darker_gray"
-                android:textColor="@android:color/black"
+                android:textColor="?attr/colorOnBackground"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,7 +76,6 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="@android:drawable/btn_dropdown"
-            android:backgroundTint="@color/white"
             android:gravity="center"
             android:spinnerMode="dropdown" />
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor"
+    android:background="?android:attr/colorBackground"
     android:padding="15dp"
     tools:context=".notice.UploadNoticeActivity">
 
@@ -19,7 +19,7 @@
             android:layout_height="160dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            app:cardBackgroundColor="@color/surfaceColor"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardElevation="7dp">
 
             <LinearLayout
@@ -50,7 +50,7 @@
                     android:layout_marginTop="15dp"
                     android:padding="5dp"
                     android:text="Select Image"
-                    android:textColor="@color/textColor"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -61,16 +61,15 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp">
+            android:layout_marginTop="15dp"
+            android:textColorHint="?android:attr/textColorHint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/noticeTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
                 android:hint="Notice Title"
-                android:textColorHint="@android:color/darker_gray"
-                android:textColor="@android:color/black" />
+                android:textColor="?attr/colorOnBackground" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -85,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            app:cardBackgroundColor="@color/surfaceColor"
+            app:cardBackgroundColor="?attr/colorSurface"
             app:cardElevation="7dp">
 
             <ImageView
