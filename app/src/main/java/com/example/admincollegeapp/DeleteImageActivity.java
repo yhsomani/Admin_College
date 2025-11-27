@@ -60,12 +60,22 @@ public class DeleteImageActivity extends AppCompatActivity implements GalleryAda
                 for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
                     String categoryName = categorySnapshot.getKey();
 
-                    for (DataSnapshot imageSnapshot : categorySnapshot.getChildren()) {
-                        String imageUrl = imageSnapshot.getValue(String.class);
-                        String key = imageSnapshot.getKey();
+                    // Filter: Skip "Notice" category to ensure notices don't show up here
+                    if (categoryName == null || categoryName.equalsIgnoreCase("Notice") || categoryName.equalsIgnoreCase("Notices")) {
+                        continue;
+                    }
 
-                        GalleryData data = new GalleryData(imageUrl, categoryName, key);
-                        list.add(data);
+                    for (DataSnapshot imageSnapshot : categorySnapshot.getChildren()) {
+                        // Strict check: Only accept if the value is a String (URL).
+                        // Notices are Objects (Maps), so this filters them out if they are mixed in.
+                        Object value = imageSnapshot.getValue();
+                        if (value instanceof String) {
+                            String imageUrl = (String) value;
+                            String key = imageSnapshot.getKey();
+
+                            GalleryData data = new GalleryData(imageUrl, categoryName, key);
+                            list.add(data);
+                        }
                     }
                 }
                 adapter.notifyDataSetChanged();

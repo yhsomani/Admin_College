@@ -22,8 +22,9 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- Changed ID from categoryTextView to pdfTitleTextView to match Adapter -->
             <TextView
-                android:id="@+id/categoryTextView"
+                android:id="@+id/pdfTitleTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
