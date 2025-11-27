@@ -11,8 +11,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.admincollegeapp.R;
@@ -32,20 +35,37 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-
+import java.util.Locale;
 public class UploadNoticeActivity extends AppCompatActivity {
 
     private Bitmap bitmap;
     private ImageView noticeImageView;
     private EditText noticeTitle;
     private MaterialButton uploadNoticeBTN;
-    private final int REQ = 1;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     private String downloadUrl = "";
     private MaterialCardView addImageCardView;
-
     private ProgressDialog progressDialog;
+
+    // New ActivityResultLauncher
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            noticeImageView.setImageBitmap(bitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +76,7 @@ public class UploadNoticeActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference().child("Notice");
 
         progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
 
         addImageCardView = findViewById(R.id.addImage);
         noticeImageView = findViewById(R.id.noticeImageView);
@@ -69,9 +90,9 @@ public class UploadNoticeActivity extends AppCompatActivity {
                     noticeTitle.setError("Required Field");
                     noticeTitle.requestFocus();
                 } else if (bitmap == null) {
-                    uploadData();
+                    uploadData(); // Upload without image
                 } else {
-                    uploadImage();
+                    uploadImage(); // Upload with image
                 }
             }
         });
@@ -115,10 +136,9 @@ public class UploadNoticeActivity extends AppCompatActivity {
         String title = noticeTitle.getText().toString();
 
         // Get Date
-        String date = new SimpleDateFormat("dd-MM-yy", java.util.Locale.getDefault()).format(Calendar.getInstance().getTime());
-
+        String date = new SimpleDateFormat("dd-MM-yy", Locale.getDefault()).format(Calendar.getInstance().getTime());
         // Get Time
-        String time = new SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(Calendar.getInstance().getTime());
+        String time = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Calendar.getInstance().getTime());
 
         String uniqueKey = databaseReference.push().getKey();
         if (uniqueKey != null) {
@@ -129,7 +149,7 @@ public class UploadNoticeActivity extends AppCompatActivity {
                         public void onSuccess(Void unused) {
                             progressDialog.dismiss();
                             Toast.makeText(UploadNoticeActivity.this, "Notice Uploaded", Toast.LENGTH_SHORT).show();
-                            clearComponents(); // Clear components after successful upload
+                            clearComponents();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -143,32 +163,14 @@ public class UploadNoticeActivity extends AppCompatActivity {
     }
 
     private void clearComponents() {
-        // Clear the EditText
         noticeTitle.setText("");
-
-        // Clear the ImageView
         noticeImageView.setImageDrawable(null);
-
-        // Reset the bitmap
         bitmap = null;
+        downloadUrl = "";
     }
 
-    void openGallery() {
+    private void openGallery() {
         Intent pickImage = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickImage, REQ);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                noticeImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        galleryLauncher.launch(pickImage);
     }
 }

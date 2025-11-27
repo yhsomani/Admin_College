@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E3F4F4"
+    android:background="@color/backgroundColor"
     android:padding="15dp"
     tools:context=".UploadImageActivity">
 
@@ -19,6 +19,7 @@
             android:layout_height="160dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/surfaceColor"
             app:cardElevation="7dp">
 
             <LinearLayout
@@ -63,6 +64,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:background="@android:drawable/btn_dropdown"
+            android:backgroundTint="@color/white"
             android:gravity="center"
             android:spinnerMode="dropdown" />
 
@@ -87,12 +89,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
+            app:cardBackgroundColor="@color/surfaceColor"
             app:cardElevation="7dp">
 
             <ImageView
                 android:id="@+id/galleryImageView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="250dp"
                 android:scaleType="centerCrop" />
         </com.google.android.material.card.MaterialCardView>
 

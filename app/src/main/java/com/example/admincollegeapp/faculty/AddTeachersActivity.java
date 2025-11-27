@@ -12,8 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.admincollegeapp.R;
@@ -42,10 +45,28 @@ public class AddTeachersActivity extends AppCompatActivity {
     private MaterialButton addTeacherButton;
     private Bitmap bitmap = null;
     private String downloadUrl = "";
-    private static final int REQ = 1;
     private ProgressDialog progressDialog;
     private StorageReference storageReference;
     private DatabaseReference databaseReference, dbRef;
+
+    // New ActivityResultLauncher
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            teacherImage.setImageBitmap(bitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,12 +140,12 @@ public class AddTeachersActivity extends AppCompatActivity {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         byte[] finalimg = baos.toByteArray();
-        final StorageReference filePath = storageReference.child("Teachers").child(name + ".jpg");
+        // CHANGED: Use unique timestamp instead of name to avoid overwriting files
+        final StorageReference filePath = storageReference.child("Teachers").child(System.currentTimeMillis() + ".jpg");
         UploadTask uploadTask = filePath.putBytes(finalimg);
         uploadTask.addOnCompleteListener(this, new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                progressDialog.dismiss();
                 if (task.isSuccessful()) {
                     filePath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
@@ -134,6 +155,7 @@ public class AddTeachersActivity extends AppCompatActivity {
                         }
                     });
                 } else {
+                    progressDialog.dismiss();
                     Toast.makeText(AddTeachersActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -142,21 +164,7 @@ public class AddTeachersActivity extends AppCompatActivity {
 
     private void openGallery() {
         Intent pickImage = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickImage, REQ);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                teacherImage.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        galleryLauncher.launch(pickImage);
     }
 
     private void insertData(String name, String email, String post, String category) {

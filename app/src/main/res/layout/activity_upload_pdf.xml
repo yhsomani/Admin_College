@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E3F4F4"
+    android:background="@color/backgroundColor"
     android:padding="15dp"
     tools:context=".UploadPdfActivity">
 
@@ -19,6 +19,7 @@
             android:layout_height="160dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
+            app:cardBackgroundColor="@color/surfaceColor"
             app:cardElevation="7dp">
 
             <LinearLayout
@@ -62,6 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="No File Selected"
+            android:textColor="@color/textColor"
             android:textSize="16sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -75,7 +77,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:hint="PDF Title" />
+                android:hint="PDF Title"
+                android:textColorHint="@android:color/darker_gray"
+                android:textColor="@android:color/black" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -88,10 +92,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pdfPreview"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="PreView PDF"
+            android:text="Preview PDF"
+            android:textColor="@color/white"
             android:textAllCaps="false" />
 
     </LinearLayout>

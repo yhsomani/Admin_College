@@ -13,8 +13,11 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -36,7 +39,6 @@ public class UploadImageActivity extends AppCompatActivity {
 
     Spinner imageCategory;
     Bitmap bitmap;
-    private final int REQ = 1;
     MaterialCardView selectImage;
     MaterialButton uploadImageBtn;
     ImageView galleryImageView;
@@ -46,6 +48,25 @@ public class UploadImageActivity extends AppCompatActivity {
     String downloadUrl = "";
     String category;
     private ProgressDialog progressDialog;
+
+    // New ActivityResultLauncher
+    private final ActivityResultLauncher<Intent> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri uri = result.getData().getData();
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            galleryImageView.setImageBitmap(bitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +154,7 @@ public class UploadImageActivity extends AppCompatActivity {
                 public void onSuccess(Void unused) {
                     progressDialog.dismiss();
                     Toast.makeText(UploadImageActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                    clearComponents(); // Clear components after successful upload
+                    clearComponents();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -146,32 +167,13 @@ public class UploadImageActivity extends AppCompatActivity {
     }
 
     private void clearComponents() {
-        // Clear the ImageView
         galleryImageView.setImageDrawable(null);
-
-        // Reset the spinner selection
         imageCategory.setSelection(0);
-
-        // Reset the bitmap
         bitmap = null;
     }
 
     private void openGallery() {
         Intent pickImage = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(pickImage, REQ);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                galleryImageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        galleryLauncher.launch(pickImage);
     }
 }

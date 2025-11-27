@@ -1,9 +1,7 @@
 package com.example.admincollegeapp;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,16 +11,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
@@ -30,25 +27,34 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-// import com.pspdfkit.PSPDFKit; // Uncomment if using PSPDFKit
-// import com.pspdfkit.configuration.activity.PdfActivityConfiguration;
-// import com.pspdfkit.ui.PdfActivity;
 
 import java.io.File;
 import java.util.HashMap;
-
 public class UploadPdfActivity extends AppCompatActivity {
 
     private Uri pdfData;
     private EditText pdfTitle;
     private TextView pdfTextView;
-    private MaterialButton uploadPdfBTN; // Removed preview button for now as it requires external library
+    private MaterialButton uploadPdfBTN, pdfPreviewBtn;
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     private ProgressDialog progressDialog;
 
-    private static final int REQ = 1;
-    private static final int PERMISSION_REQUEST_CODE = 200;
+    // New ActivityResultLauncher for picking PDF
+    private final ActivityResultLauncher<Intent> pdfLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        pdfData = result.getData().getData();
+                        if (pdfData != null) {
+                            pdfTextView.setText(getPdfName(pdfData));
+                        }
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +67,7 @@ public class UploadPdfActivity extends AppCompatActivity {
         pdfTitle = findViewById(R.id.pdfTitleTextView);
         pdfTextView = findViewById(R.id.pdfTextView);
         uploadPdfBTN = findViewById(R.id.uploadPdfButton);
+        pdfPreviewBtn = findViewById(R.id.pdfPreview); // Added mapping
         progressDialog = new ProgressDialog(this);
 
         MaterialCardView addPdfCardView = findViewById(R.id.addPdf);
@@ -82,6 +89,25 @@ public class UploadPdfActivity extends AppCompatActivity {
                     Toast.makeText(UploadPdfActivity.this, "Please Select PDF", Toast.LENGTH_SHORT).show();
                 } else {
                     uploadPdf(title);
+                }
+            }
+        });
+
+        // Fixed Preview Button - Opens in external PDF Viewer
+        pdfPreviewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (pdfData != null) {
+                    Intent viewerIntent = new Intent(Intent.ACTION_VIEW);
+                    viewerIntent.setDataAndType(pdfData, "application/pdf");
+                    viewerIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    try {
+                        startActivity(Intent.createChooser(viewerIntent, "Open PDF with..."));
+                    } catch (Exception e) {
+                        Toast.makeText(UploadPdfActivity.this, "No PDF Viewer found", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(UploadPdfActivity.this, "Select a PDF first", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -126,38 +152,29 @@ public class UploadPdfActivity extends AppCompatActivity {
         data.put("pdfTitle", title);
         data.put("pdfUrl", downloadUrl);
 
-        databaseReference.child("pdf").child(uniqueKey).setValue(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        progressDialog.dismiss();
-                        Toast.makeText(UploadPdfActivity.this, "Pdf Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                        clearComponents();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(UploadPdfActivity.this, "Failed to upload data", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        if (uniqueKey != null) {
+            databaseReference.child("pdf").child(uniqueKey).setValue(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            progressDialog.dismiss();
+                            Toast.makeText(UploadPdfActivity.this, "Pdf Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                            clearComponents();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(UploadPdfActivity.this, "Failed to upload data", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     void openPdfPicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("application/pdf");
-        startActivityForResult(Intent.createChooser(intent, "Select Pdf File"), REQ);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ && resultCode == RESULT_OK && data != null) {
-            pdfData = data.getData();
-            if (pdfData != null) {
-                pdfTextView.setText(getPdfName(pdfData));
-            }
-        }
+        pdfLauncher.launch(Intent.createChooser(intent, "Select Pdf File"));
     }
 
     private String getPdfName(Uri uri) {
@@ -165,7 +182,6 @@ public class UploadPdfActivity extends AppCompatActivity {
         if (uri.getScheme().equals("content")) {
             try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    // Fix for column index issue
                     int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
                     if(index >= 0) {
                         result = cursor.getString(index);
