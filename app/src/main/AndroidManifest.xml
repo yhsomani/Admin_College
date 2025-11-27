@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- Removed 'package' attribute as it is defined in build.gradle -->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
@@ -28,7 +27,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Other Activities (Defined ONLY ONCE) -->
+        <!-- Activities -->
         <activity android:name=".notice.UploadNoticeActivity" />
         <activity android:name=".notice.DeleteNoticeActivity" />
         <activity android:name=".UploadImageActivity" />
@@ -36,10 +35,8 @@
         <activity android:name=".faculty.FacultyActivity" />
         <activity android:name=".faculty.AddTeachersActivity" />
 
-        <!-- PDF Activity -->
-        <activity
-            android:name="com.pspdfkit.ui.PdfActivity"
-            android:windowSoftInputMode="adjustNothing" />
+        <!-- Removed PdfActivity to solve build error: Class not found -->
+        <!-- <activity android:name="com.pspdfkit.ui.PdfActivity" android:windowSoftInputMode="adjustNothing" /> -->
 
     </application>
 </manifest>
