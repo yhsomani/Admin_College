@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.AdminCollegeAPP" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.AdminCollege" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
@@ -15,6 +15,4 @@
         <item name="android:windowBackground">@color/backgroundColor</item>
         <item name="android:textColor">@color/textColor</item>
     </style>
-
-    <style name="Theme.AdminCollege" parent="Base.Theme.AdminCollegeAPP" />
 </resources>
