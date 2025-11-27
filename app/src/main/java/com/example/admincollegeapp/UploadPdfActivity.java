@@ -42,7 +42,7 @@ public class UploadPdfActivity extends AppCompatActivity {
     private Uri pdfData;
     private EditText pdfTitle;
     private TextView pdfTextView;
-    private MaterialButton uploadPdfBTN, previewPdf;
+    private MaterialButton uploadPdfBTN; // Removed preview button for now as it requires external library
     private DatabaseReference databaseReference;
     private StorageReference storageReference;
     private ProgressDialog progressDialog;
@@ -55,37 +55,19 @@ public class UploadPdfActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_pdf);
 
-        // PSPDFKit.initialize(this, "YOUR_LICENSE_KEY_GOES_HERE"); // Uncomment if using PSPDFKit
-
         databaseReference = FirebaseDatabase.getInstance().getReference();
         storageReference = FirebaseStorage.getInstance().getReference();
 
         pdfTitle = findViewById(R.id.pdfTitleTextView);
         pdfTextView = findViewById(R.id.pdfTextView);
         uploadPdfBTN = findViewById(R.id.uploadPdfButton);
-        previewPdf = findViewById(R.id.pdfPreview);
         progressDialog = new ProgressDialog(this);
 
         MaterialCardView addPdfCardView = findViewById(R.id.addPdf);
         addPdfCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkPermission()) {
-                    requestPermission();
-                } else {
-                    openPdfPicker();
-                }
-            }
-        });
-
-        previewPdf.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (pdfData != null) {
-                    displayPDF(pdfData);
-                } else {
-                    Toast.makeText(UploadPdfActivity.this, "Select Pdf", Toast.LENGTH_SHORT).show();
-                }
+                openPdfPicker();
             }
         });
 
@@ -125,7 +107,7 @@ public class UploadPdfActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(UploadPdfActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadPdfActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -133,7 +115,7 @@ public class UploadPdfActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 progressDialog.dismiss();
-                Toast.makeText(UploadPdfActivity.this, "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UploadPdfActivity.this, "Upload Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -145,38 +127,20 @@ public class UploadPdfActivity extends AppCompatActivity {
         data.put("pdfUrl", downloadUrl);
 
         databaseReference.child("pdf").child(uniqueKey).setValue(data)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onSuccess(Void unused) {
                         progressDialog.dismiss();
                         Toast.makeText(UploadPdfActivity.this, "Pdf Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                        clearComponents(); // Clear components after successful upload
+                        clearComponents();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(UploadPdfActivity.this, "Failed to upload pdf", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadPdfActivity.this, "Failed to upload data", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
-
-    private boolean checkPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            openPdfPicker();
-        } else {
-            Toast.makeText(this, "Permission Denied! Please allow the permission to read PDF files.", Toast.LENGTH_SHORT).show();
-        }
     }
 
     void openPdfPicker() {
@@ -201,7 +165,11 @@ public class UploadPdfActivity extends AppCompatActivity {
         if (uri.getScheme().equals("content")) {
             try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    // Fix for column index issue
+                    int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if(index >= 0) {
+                        result = cursor.getString(index);
+                    }
                 }
             }
         }
@@ -211,14 +179,9 @@ public class UploadPdfActivity extends AppCompatActivity {
         return result;
     }
 
-    private void displayPDF(Uri pdfData) {
-        // Placeholder or custom PDF viewer implementation
-        Toast.makeText(this, "Preview feature is not configured.", Toast.LENGTH_SHORT).show();
-    }
-
     private void clearComponents() {
         pdfTitle.setText("");
-        pdfTextView.setText("");
+        pdfTextView.setText("No File Selected");
         pdfData = null;
     }
 }

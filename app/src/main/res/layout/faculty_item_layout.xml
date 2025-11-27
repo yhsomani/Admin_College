@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:elevation="20dp"
-    app:cardBackgroundColor="#FAFAFA"
+    app:cardBackgroundColor="@color/surfaceColor"
     app:cardCornerRadius="15dp">
 
     <LinearLayout
@@ -62,13 +62,13 @@
                     android:textColor="@color/textColor"
                     android:textSize="18sp" />
 
+                <!-- Removed android:onClick attribute -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteData"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:onClick="onUpdateButtonClick"
                     android:text="Delete Data"
                     android:textAllCaps="false" />
 
