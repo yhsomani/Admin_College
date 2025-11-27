@@ -79,7 +79,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     // PDF Viewer (Note: This library requires a license key in production)
-    implementation 'com.pspdfkit:pspdfkit:8.4.1'
+//    implementation 'com.pspdfkit:pspdfkit:8.4.1'
     implementation libs.activity
     implementation libs.recyclerview
     implementation libs.firebase.auth

@@ -48,13 +48,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".notice.DeleteNoticeActivity" />
-        <activity android:name=".notice.DeleteNoticeActivity" />
-        <activity android:name=".faculty.FacultyActivity" />
-        <activity android:name=".faculty.AddTeachersActivity" />
-        <activity
-            android:name=".UploadPdfActivity"
-            android:windowSoftInputMode="adjustNothing" />
     </application>
 
 </manifest>
