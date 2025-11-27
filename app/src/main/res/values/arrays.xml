@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="teacher_categories">
+        <item>Select Category</item>
+        <item>Computer Science</item>
+        <item>Mechanical Engineering</item>
+        <item>Civil Engineering</item>
+        <item>Electrical Engineering</item>
+    </string-array>
+</resources>

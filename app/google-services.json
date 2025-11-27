@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "943305791541",
+    "firebase_url": "https://study-b078a-default-rtdb.firebaseio.com",
+    "project_id": "study-b078a",
+    "storage_bucket": "study-b078a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943305791541:android:02fc78625574fa6b74797c",
+        "android_client_info": {
+          "package_name": "com.example.admincollegeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY8WGLSVBxQMD8zqR_PtvRxAuu_M7eLGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943305791541:android:7fa52b76defe068474797c",
+        "android_client_info": {
+          "package_name": "com.example.study"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY8WGLSVBxQMD8zqR_PtvRxAuu_M7eLGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
