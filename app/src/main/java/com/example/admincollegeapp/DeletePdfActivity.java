@@ -28,6 +28,7 @@ public class DeletePdfActivity extends AppCompatActivity implements PdfAdapter.P
     private PdfAdapter adapter;
     private DatabaseReference reference;
     private ValueEventListener eventListener;
+    private android.widget.TextView emptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +37,9 @@ public class DeletePdfActivity extends AppCompatActivity implements PdfAdapter.P
 
         recyclerView = findViewById(R.id.deletePdfRecycler);
         progressBar = findViewById(R.id.progressBar);
+        emptyStateTextView = findViewById(R.id.emptyStateTextView);
 
-        reference = FirebaseDatabase.getInstance().getReference().child("pdf");
+        reference = com.example.admincollegeapp.utils.FirebaseConfig.getDatabaseReference().child("pdf");
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -67,6 +69,14 @@ public class DeletePdfActivity extends AppCompatActivity implements PdfAdapter.P
                 }
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
+
+                if (list.isEmpty()) {
+                    emptyStateTextView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    emptyStateTextView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -81,6 +91,23 @@ public class DeletePdfActivity extends AppCompatActivity implements PdfAdapter.P
     public void onDeleteClick(int position) {
         PdfData selectedItem = list.get(position);
         String key = selectedItem.getKey();
+        String pdfUrl = selectedItem.getPdfUrl();
+
+        if (pdfUrl != null && !pdfUrl.isEmpty()) {
+            try {
+                com.google.firebase.storage.StorageReference storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().getReferenceFromUrl(pdfUrl);
+                storageRef.delete().addOnCompleteListener(task -> {
+                    deletePdfFromDatabase(key);
+                });
+            } catch (IllegalArgumentException e) {
+                 deletePdfFromDatabase(key);
+            }
+        } else {
+             deletePdfFromDatabase(key);
+        }
+    }
+
+    private void deletePdfFromDatabase(String key) {
         reference.child(key).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(DeletePdfActivity.this, "PDF Deleted Successfully", Toast.LENGTH_SHORT).show();

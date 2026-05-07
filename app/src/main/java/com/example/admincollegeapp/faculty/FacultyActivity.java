@@ -29,6 +29,7 @@ public class FacultyActivity extends AppCompatActivity {
     DatabaseReference databaseReference;
     // FIXED: Variable to hold the listener so we can remove it later
     private ValueEventListener teacherListener;
+    private android.widget.TextView emptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +37,8 @@ public class FacultyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_faculty);
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("teacher");
+        emptyStateTextView = findViewById(R.id.emptyStateTextView);
+        databaseReference = com.example.admincollegeapp.utils.FirebaseConfig.getDatabaseReference().child("teacher");
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +63,7 @@ public class FacultyActivity extends AppCompatActivity {
 
                 parentLayout.removeAllViews(); // Clear previous views
 
+                boolean hasData = false;
                 for (DataSnapshot departmentSnapshot : dataSnapshot.getChildren()) {
                     String departmentName = departmentSnapshot.getKey();
                     List<TeacherData> teachers = new ArrayList<>();
@@ -78,7 +81,18 @@ public class FacultyActivity extends AppCompatActivity {
 
                         teachers.add(teacher);
                     }
+                    if (!teachers.isEmpty()) {
+                        hasData = true;
+                    }
                     displayDepartmentWithTeachers(parentLayout, departmentName, teachers);
+                }
+
+                if (!hasData) {
+                    emptyStateTextView.setVisibility(View.VISIBLE);
+                    parentLayout.setVisibility(View.GONE);
+                } else {
+                    emptyStateTextView.setVisibility(View.GONE);
+                    parentLayout.setVisibility(View.VISIBLE);
                 }
             }
 

@@ -28,6 +28,7 @@ public class DeleteImageActivity extends AppCompatActivity implements GalleryAda
     private GalleryAdapter adapter;
     private DatabaseReference reference;
     private ValueEventListener eventListener;
+    private android.widget.TextView emptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +37,9 @@ public class DeleteImageActivity extends AppCompatActivity implements GalleryAda
 
         recyclerView = findViewById(R.id.deleteImageRecycler);
         progressBar = findViewById(R.id.progressBar);
+        emptyStateTextView = findViewById(R.id.emptyStateTextView);
 
-        reference = FirebaseDatabase.getInstance().getReference().child("gallery");
+        reference = com.example.admincollegeapp.utils.FirebaseConfig.getDatabaseReference().child("gallery");
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -80,6 +82,14 @@ public class DeleteImageActivity extends AppCompatActivity implements GalleryAda
                 }
                 adapter.notifyDataSetChanged();
                 progressBar.setVisibility(View.GONE);
+
+                if (list.isEmpty()) {
+                    emptyStateTextView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                } else {
+                    emptyStateTextView.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -95,7 +105,26 @@ public class DeleteImageActivity extends AppCompatActivity implements GalleryAda
         GalleryData selectedItem = list.get(position);
         String category = selectedItem.getCategory();
         String key = selectedItem.getKey();
+        String imageUrl = selectedItem.getImageUrl();
 
+        // 1. First attempt to delete from storage
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                com.google.firebase.storage.StorageReference storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+                storageRef.delete().addOnCompleteListener(task -> {
+                    // After storage deletion (success or fail), remove from DB
+                    deleteFromDatabase(category, key);
+                });
+            } catch (IllegalArgumentException e) {
+                // If the URL is not a valid firebase storage URL, still delete from DB
+                deleteFromDatabase(category, key);
+            }
+        } else {
+             deleteFromDatabase(category, key);
+        }
+    }
+
+    private void deleteFromDatabase(String category, String key) {
         reference.child(category).child(key).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(DeleteImageActivity.this, "Image Deleted", Toast.LENGTH_SHORT).show();

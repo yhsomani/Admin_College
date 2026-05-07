@@ -7,4 +7,17 @@
         <item>Civil Engineering</item>
         <item>Electrical Engineering</item>
     </string-array>
+
+    <string-array name="image_categories">
+        <item>Select Category</item>
+        <item>Academics</item>
+        <item>Activities</item>
+        <item>Administration</item>
+        <item>Facilities</item>
+        <item>Student Resources</item>
+        <item>Health and Safety</item>
+        <item>Community</item>
+        <item>General</item>
+        <item>Other Events</item>
+    </string-array>
 </resources>
