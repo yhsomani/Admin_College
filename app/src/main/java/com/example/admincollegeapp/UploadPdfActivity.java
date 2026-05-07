@@ -21,10 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.example.admincollegeapp.utils.FirebaseConfig;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -61,8 +60,8 @@ public class UploadPdfActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_pdf);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        storageReference = FirebaseStorage.getInstance().getReference();
+        databaseReference = FirebaseConfig.getDatabaseReference();
+        storageReference = FirebaseConfig.getStorageReference();
 
         pdfTitle = findViewById(R.id.pdfTitleTextView);
         pdfTextView = findViewById(R.id.pdfTextView);

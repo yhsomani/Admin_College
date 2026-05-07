@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.admincollegeapp.R;
+import com.example.admincollegeapp.utils.FirebaseConfig;
 import com.example.admincollegeapp.utils.ImageUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,8 +28,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -75,8 +74,8 @@ public class UploadNoticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_notice);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Notice");
-        storageReference = FirebaseStorage.getInstance().getReference().child("Notice");
+        databaseReference = FirebaseConfig.getDatabaseReference().child("Notice");
+        storageReference = FirebaseConfig.getStorageReference().child("Notice");
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);

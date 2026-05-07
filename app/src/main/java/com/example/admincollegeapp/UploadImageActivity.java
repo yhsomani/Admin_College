@@ -28,8 +28,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
+import com.example.admincollegeapp.utils.FirebaseConfig;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -81,12 +80,12 @@ public class UploadImageActivity extends AppCompatActivity {
         uploadImageBtn = findViewById(R.id.uploadImageButton);
         galleryImageView = findViewById(R.id.galleryImageView);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("gallery");
-        storageReference = FirebaseStorage.getInstance().getReference().child("gallery");
+        databaseReference = FirebaseConfig.getDatabaseReference().child("gallery");
+        storageReference = FirebaseConfig.getStorageReference().child("gallery");
 
         progressDialog = new ProgressDialog(this);
 
-        String[] items = {"Select Category", "Academics", "Activities", "Administration", "Facilities", "Student Resources", "Health and Safety", "Community", "General", "Other Events"};
+        String[] items = getResources().getStringArray(R.array.image_categories);
         imageCategory.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items));
         imageCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

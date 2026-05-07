@@ -25,6 +25,7 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
     private ArrayList<NoticeData> noticeDataList;
     private DatabaseReference noticeRef;
     private ValueEventListener noticeListener;
+    private android.widget.TextView emptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +33,9 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
         setContentView(R.layout.activity_delete_notice);
         deleteNoticeRecycler = findViewById(R.id.deleteNoticeRecycler);
         progressBar = findViewById(R.id.progressBar);
+        emptyStateTextView = findViewById(R.id.emptyStateTextView);
 
-        noticeRef = FirebaseDatabase.getInstance().getReference("Notice");
+        noticeRef = com.example.admincollegeapp.utils.FirebaseConfig.getDatabaseReference().child("Notice");
 
         noticeDataList = new ArrayList<>();
 
@@ -64,6 +66,14 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
                 deleteNoticeRecycler.setAdapter(noticeAdapter);
 
                 progressBar.setVisibility(View.GONE);
+
+                if (noticeDataList.isEmpty()) {
+                    emptyStateTextView.setVisibility(View.VISIBLE);
+                    deleteNoticeRecycler.setVisibility(View.GONE);
+                } else {
+                    emptyStateTextView.setVisibility(View.GONE);
+                    deleteNoticeRecycler.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -79,9 +89,28 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
     public void onDeleteClick(int position) {
         // Safe check for index
         if (position >= 0 && position < noticeDataList.size()) {
-            DatabaseReference noticeToDeleteRef = noticeRef.child(noticeDataList.get(position).getKey());
-            noticeToDeleteRef.removeValue();
+            NoticeData noticeData = noticeDataList.get(position);
+            String imageUrl = noticeData.getImage();
+            String key = noticeData.getKey();
+
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                try {
+                    com.google.firebase.storage.StorageReference storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+                    storageRef.delete().addOnCompleteListener(task -> {
+                        deleteNoticeFromDB(key);
+                    });
+                } catch (IllegalArgumentException e) {
+                    deleteNoticeFromDB(key);
+                }
+            } else {
+                deleteNoticeFromDB(key);
+            }
         }
+    }
+
+    private void deleteNoticeFromDB(String key) {
+        DatabaseReference noticeToDeleteRef = noticeRef.child(key);
+        noticeToDeleteRef.removeValue();
     }
 
     @Override

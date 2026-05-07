@@ -109,4 +109,6 @@ dependencies {
 //    implementation libs.credentials
 //    implementation libs.credentials.play.services.auth
 //    implementation libs.googleid
+
+    testImplementation 'junit:junit:4.13.2'
 }
