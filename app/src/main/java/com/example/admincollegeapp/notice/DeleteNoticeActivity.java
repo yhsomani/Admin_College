@@ -23,6 +23,7 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
     private RecyclerView deleteNoticeRecycler;
     private ProgressBar progressBar;
     private ArrayList<NoticeData> noticeDataList;
+    private NoticeAdapter noticeAdapter;
     private DatabaseReference noticeRef;
     private ValueEventListener noticeListener;
     private android.widget.TextView emptyStateTextView;
@@ -38,6 +39,8 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
         noticeRef = com.example.admincollegeapp.utils.FirebaseConfig.getDatabaseReference().child("Notice");
 
         noticeDataList = new ArrayList<>();
+        noticeAdapter = new NoticeAdapter(DeleteNoticeActivity.this, noticeDataList, DeleteNoticeActivity.this);
+        deleteNoticeRecycler.setAdapter(noticeAdapter);
 
         deleteNoticeRecycler.setLayoutManager(new LinearLayoutManager(this));
         deleteNoticeRecycler.setHasFixedSize(true);
@@ -62,8 +65,7 @@ public class DeleteNoticeActivity extends AppCompatActivity implements NoticeAda
                         noticeDataList.add(noticeData);
                     }
                 }
-                NoticeAdapter noticeAdapter = new NoticeAdapter(DeleteNoticeActivity.this, noticeDataList, DeleteNoticeActivity.this);
-                deleteNoticeRecycler.setAdapter(noticeAdapter);
+                noticeAdapter.notifyDataSetChanged();
 
                 progressBar.setVisibility(View.GONE);
 
