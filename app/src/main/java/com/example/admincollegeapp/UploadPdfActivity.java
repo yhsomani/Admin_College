@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.example.admincollegeapp.utils.FirebaseConfig;
+import com.example.admincollegeapp.utils.PathUtils;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
@@ -117,7 +118,8 @@ public class UploadPdfActivity extends AppCompatActivity {
         progressDialog.setMessage("Uploading PDF...");
         progressDialog.show();
 
-        String pdfName = title + "-" + System.currentTimeMillis() + ".pdf";
+        String sanitizedTitle = PathUtils.sanitizeFilename(title);
+        String pdfName = sanitizedTitle + "-" + System.currentTimeMillis() + ".pdf";
         StorageReference reference = storageReference.child("pdf").child(pdfName);
 
         reference.putFile(pdfData).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
